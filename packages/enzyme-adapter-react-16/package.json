@@ -1,6 +1,6 @@
 {
-  "name": "enzyme-adapter-react-16",
-  "version": "1.15.2",
+  "name": "@eps1lon/enzyme-adapter-react-next",
+  "version": "0.0.1",
   "description": "JavaScript Testing utilities for React",
   "homepage": "https://enzymejs.github.io/enzyme/",
   "main": "build",
@@ -11,7 +11,7 @@
     "prebuild": "npm run clean",
     "build": "babel --source-maps=both src --out-dir build",
     "watch": "npm run build -- -w",
-    "prepublish": "not-in-publish || (npm run build && safe-publish-latest && cp ../../{LICENSE,README}.md ./)"
+    "prepublish": "not-in-publish || (npm run build && safe-publish-latest)"
   },
   "repository": {
     "type": "git",

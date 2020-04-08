@@ -469,7 +469,7 @@ class ReactSixteenAdapter extends EnzymeAdapter {
         }
         return getNodeFromRootFinder(
           adapter.isCustomComponent,
-          toTree(instance._reactInternalFiber),
+          toTree(instance._reactInternals),
           options,
         );
       },
@@ -514,7 +514,7 @@ class ReactSixteenAdapter extends EnzymeAdapter {
         return {
           ...this,
           ...getWrappingComponentMountRenderer({
-            toTree: (inst) => toTree(inst._reactInternalFiber),
+            toTree: (inst) => toTree(inst._reactInternals),
             getMountWrapperInstance: () => instance,
           }),
         };
