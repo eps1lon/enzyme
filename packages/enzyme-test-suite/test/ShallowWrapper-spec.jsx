@@ -1707,7 +1707,7 @@ describe('shallow', () => {
 
       it('works without memoizing', () => {
         const wrapper = shallow(<RendersApp />);
-        expect(wrapper.debug()).to.equal('<App />');
+        expect(wrapper.debug()).to.equal(is('>= 17') ? '<AppMemoized />' : '<App />');
         expect(wrapper.dive().debug()).to.equal(`<div>
   Guest
 </div>`);
@@ -2132,7 +2132,7 @@ describe('shallow', () => {
             spy.resetHistory();
             wrapper.setContext({ foo: 'foo' });
             expect(spy.args).to.deep.equal([
-              ['componentWillReceiveProps'],
+              ...(is('>= 17') ? [] : [['componentWillReceiveProps']]),
               ['shouldComponentUpdate'],
               ['componentWillUpdate'],
               ['render'],

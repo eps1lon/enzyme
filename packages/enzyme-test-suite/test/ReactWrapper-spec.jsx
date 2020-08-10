@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import sinon from 'sinon-sandbox';
 import wrap from 'mocha-wrap';
 import isEqual from 'lodash.isequal';
+import path from 'path';
 import {
   mount,
   ReactWrapper,
@@ -405,7 +406,7 @@ describeWithDOM('mount', () => {
         .it('with isValidElementType defined on the Adapter', () => {
           expect(() => {
             mount(<Bar />);
-          }).to.throw('Warning: Failed prop type: Component must be a valid element type!\n    in WrapperComponent');
+          }).to.throw(/^Warning: Failed prop type: Component must be a valid element type!\n {4}(?:at|in) WrapperComponent(?: \([^:]+:\d+:\d+\))?$/);
         });
     });
   });
@@ -2039,7 +2040,14 @@ describeWithDOM('mount', () => {
           const [[actualError, info]] = spy.args;
           expect(actualError).to.satisfy(properErrorMessage);
           expect(info).to.deep.equal({
-            componentStack: `
+            componentStack: is('>= 17')
+              ? `
+    at Thrower (${__filename}:2369:29)
+    at span
+    at div
+    at ErrorBoundary (${__filename}:2386:13)
+    at WrapperComponent (${path.join(path.dirname(__filename), '../../enzyme-adapter-utils/build/createMountWrapper.js')}:114:7)`
+              : `
     in Thrower (created by ErrorBoundary)
     in span (created by ErrorBoundary)${hasFragments ? '' : `
     in main (created by ErrorBoundary)`}
@@ -2063,7 +2071,15 @@ describeWithDOM('mount', () => {
           const [[actualError, info]] = spy.args;
           expect(actualError).to.satisfy(properErrorMessage);
           expect(info).to.deep.equal({
-            componentStack: `
+            componentStack: is('>= 17')
+              ? `
+    at Thrower (${__filename}:2369:29)
+    at span
+    at div
+    at ErrorBoundary (${__filename}:2386:13)
+    at ErrorSFC
+    at WrapperComponent (${path.join(path.dirname(__filename), '../../enzyme-adapter-utils/build/createMountWrapper.js')}:114:7)`
+              : `
     in Thrower (created by ErrorBoundary)
     in span (created by ErrorBoundary)${hasFragments ? '' : `
     in main (created by ErrorBoundary)`}
@@ -2227,7 +2243,13 @@ describeWithDOM('mount', () => {
 
     describeIf(is('>= 16.6'), 'getDerivedStateFromError and componentDidCatch combined', () => {
       const expectedInfo = {
-        componentStack: `
+        componentStack: is('>= 17')
+          ? `
+    at Thrower (${__filename}:2763:28)
+    at div
+    at ErrorBoundary (${__filename}:2799:13)
+    at WrapperComponent (${path.join(path.dirname(__filename), '../../enzyme-adapter-utils/build/createMountWrapper.js')}:114:7)`
+          : `
     in Thrower (created by ErrorBoundary)
     in div (created by ErrorBoundary)
     in ErrorBoundary (created by WrapperComponent)
@@ -2308,10 +2330,12 @@ describeWithDOM('mount', () => {
           const [first, second, third, fourth] = lifecycleSpy.args;
           expect(first).to.deep.equal(['render']);
           expect(second).to.satisfy(([name, error, ...rest]) => name === 'getDerivedStateFromError'
-              && properErrorMessage(error)
-              && rest.length === 0);
+            && properErrorMessage(error)
+            && rest.length === 0);
           expect(third).to.deep.equal(['render']);
-          expect(fourth).to.satisfy(([name, error, info]) => name === 'componentDidCatch' && properErrorMessage(error) && isEqual(info, expectedInfo));
+          expect(fourth).to.satisfy(([name, error, info]) => name === 'componentDidCatch'
+            && properErrorMessage(error)
+            && isEqual(info, expectedInfo));
 
           expect(stateSpy).to.have.property('callCount', 1);
           expect(stateSpy.args).to.deep.equal([
